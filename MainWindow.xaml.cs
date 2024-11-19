@@ -91,7 +91,8 @@ public partial class MainWindow : Window,INotifyPropertyChanged {
 }
 
 public class LeftTimeToTextConverter : SimpleConverter<TimeSpan> {
-    public override object Convert(TimeSpan value) => value.ToString("hh':'mm':'ss'.'f");
+    public override object Convert(TimeSpan value) => 
+        $"{Math.Max(0,Math.Truncate(value.TotalHours))}:{value:mm':'ss'.'f}";
 }
 
 public class LeftTimeTextColorConverter : SimpleConverter<TimeSpan> {
