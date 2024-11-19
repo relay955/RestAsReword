@@ -15,14 +15,15 @@ namespace RestAsReward;
 /// </summary>
 public partial class MainWindow : Window,INotifyPropertyChanged {
     public event PropertyChangedEventHandler? PropertyChanged;
-    public TimeSpan LeftTime { get; set; } = TimeSpan.FromSeconds(5);
-    public bool IsPaused { get; set; } = false;
+    public TimeSpan LeftTime { get; set; }
+    public bool IsPaused { get; set; } = true;
     public Visibility InWorkVisibility { get; set; } = Visibility.Hidden;
     
     private long _tick;
     
     public MainWindow() {
         InitializeComponent();
+        LeftTime = SimpleLeftTimeVariableManager.Load();
         var screenHeight = SystemParameters.PrimaryScreenHeight;
         var screenWidth = SystemParameters.PrimaryScreenWidth;
         Top = screenHeight - Height - 80;
@@ -38,6 +39,8 @@ public partial class MainWindow : Window,INotifyPropertyChanged {
                         }
                         LeftTime = LeftTime.Subtract(TimeSpan.FromMilliseconds(100));
                     }));
+
+                    if (_tick % 10 == 0) SimpleLeftTimeVariableManager.Save(LeftTime);
                 } else {
                     if(_tick % 10 == 0) {
                         Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => {
@@ -55,28 +58,34 @@ public partial class MainWindow : Window,INotifyPropertyChanged {
     private void StartStopButton_OnMouseDown(object sender, MouseButtonEventArgs e) {
         IsPaused = !IsPaused;
         InWorkVisibility = IsPaused ? Visibility.Visible : Visibility.Hidden;
+        SimpleLeftTimeVariableManager.Save(LeftTime);
     }
 
     
     private void m10Button_OnMouseDown(object sender, MouseButtonEventArgs e) {
         LeftTime = LeftTime.Subtract(TimeSpan.FromMinutes(10));
         if(LeftTime < TimeSpan.FromMilliseconds(1)) LeftTime = TimeSpan.FromMilliseconds(-1);
+        SimpleLeftTimeVariableManager.Save(LeftTime);
     }
     
     private void p50Button_OnMouseDown(object sender, MouseButtonEventArgs e) {
         LeftTime = LeftTime.Add(TimeSpan.FromMinutes(50));
+        SimpleLeftTimeVariableManager.Save(LeftTime);
     }
     
     private void p10Button_OnMouseDown(object sender, MouseButtonEventArgs e) {
         LeftTime = LeftTime.Add(TimeSpan.FromMinutes(10));
+        SimpleLeftTimeVariableManager.Save(LeftTime);
     }
     
     private void p5Button_OnMouseDown(object sender, MouseButtonEventArgs e) {
         LeftTime = LeftTime.Add(TimeSpan.FromMinutes(5));
+        SimpleLeftTimeVariableManager.Save(LeftTime);
     }
     
     private void p1Button_OnMouseDown(object sender, MouseButtonEventArgs e) {
         LeftTime = LeftTime.Add(TimeSpan.FromMinutes(1));
+        SimpleLeftTimeVariableManager.Save(LeftTime);
     }
     
 }
